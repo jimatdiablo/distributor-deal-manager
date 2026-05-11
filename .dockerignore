@@ -1,0 +1,9 @@
+.git
+.github
+.env
+storage/*.log
+storage/cache/*
+storage/tmp/*
+*.zip
+*.tar
+*.tar.gz

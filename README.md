@@ -38,6 +38,18 @@ Notes:
 Direct Docker command:
 docker run --rm --add-host "host.docker.internal:host-gateway" -p 8080:8080 -v "C:/Users/jimcl/Documents/Diablo Data/test/projects/Distributor-Deal-Manager/distributor-deal-manager:/app" -w /app diablo-php-cli php -S 0.0.0.0:8080 -t public
 
+## Release Container
+Tagged pushes publish a container image to GitHub Container Registry:
+
+```text
+ghcr.io/jimatdiablo/distributor-deal-manager:<tag>
+ghcr.io/jimatdiablo/distributor-deal-manager:latest
+```
+
+The image intentionally does not include `.env`; pass runtime database settings through environment variables or an env file when the container is started.
+
+After the first tagged publish, set the package visibility to Public in GitHub if GHCR creates it as private because the source repository is private.
+
 ## Database Configuration
 Environment variables used by the app:
 - DDM_DB_HOST
