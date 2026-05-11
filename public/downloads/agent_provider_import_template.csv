@@ -1,0 +1,2 @@
+name,address,city,state,country_code,postal_code,phone,phone_alt,email,segment,distributor_name,point_of_contact_name,point_of_contact_phone,point_of_contact_email,customer_name,start_date,end_date,status
+,123 Main St,Anytown,CA,US,90210,555-000-1111,555-000-2222,agent@example.com,Residential,NACE,Jane Doe,555-000-3333,jane@example.com,Sample Customer,YYYY-MM-DD,,Reserved
