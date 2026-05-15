@@ -48,7 +48,7 @@ ghcr.io/jimatdiablo/distributor-deal-manager:latest
 
 The image intentionally does not include `.env`; pass runtime database settings through environment variables or an env file when the container is started.
 
-Keep the GHCR package private. Access should require GitHub authentication with package permissions.
+The GHCR package is intended to be public so deployments can pull the release image without GitHub authentication.
 
 ## Database Configuration
 Environment variables used by the app:
