@@ -9,7 +9,7 @@ use PDOException;
 
 final class Database
 {
-    public static function pdo(array $config): PDO
+    public static function pdo(array $config, bool $exitOnFailure = true): PDO
     {
         $db = require __DIR__ . '/../../config/database.php';
 
@@ -28,6 +28,10 @@ final class Database
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
         } catch (PDOException $e) {
+            if (!$exitOnFailure) {
+                throw $e;
+            }
+
             error_log('DDM database connection failed: ' . $e->getMessage());
             http_response_code(500);
             header('Content-Type: text/plain; charset=UTF-8');

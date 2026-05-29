@@ -1,7 +1,21 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DDM_DB_HOST: mysql
+      DDM_DB_PORT: 3306
+    ports:
+      - "127.0.0.1:${DDM_APP_PORT:-8080}:8080"
+    depends_on:
+      - mysql
+
   mysql:
     image: mysql:8.0
-    container_name: ddm-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DDM_MYSQL_ROOT_PASSWORD:-change-me-root}

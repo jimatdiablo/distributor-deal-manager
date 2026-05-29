@@ -1,21 +1,10 @@
--- Local dev schema aligned with production import
+-- Local first-start schema aligned with production import.
+-- This file is additive and runs only when MySQL initializes an empty data volume.
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
-CREATE DATABASE IF NOT EXISTS distdb
-  DEFAULT CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE distdb;
-
-DROP TABLE IF EXISTS deals;
-DROP TABLE IF EXISTS providers;
-DROP TABLE IF EXISTS agent;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS distributors;
-
-CREATE TABLE distributors (
+CREATE TABLE IF NOT EXISTS distributors (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   address VARCHAR(120) DEFAULT NULL,
@@ -43,7 +32,7 @@ CREATE TABLE distributors (
   CONSTRAINT chk_distributors_contract_term CHECK (contract_term_years IN (1, 2, 3))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   email VARCHAR(190) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
@@ -66,7 +55,7 @@ CREATE TABLE users (
   CONSTRAINT chk_users_status CHECK (status IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE agent (
+CREATE TABLE IF NOT EXISTS agent (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   distributor_id INT UNSIGNED DEFAULT NULL,
   first_name VARCHAR(80) NOT NULL,
@@ -92,7 +81,7 @@ CREATE TABLE agent (
   CONSTRAINT chk_agent_status CHECK (status IN (0, 1, 2))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE providers (
+CREATE TABLE IF NOT EXISTS providers (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   address VARCHAR(120) DEFAULT NULL,
@@ -129,7 +118,7 @@ CREATE TABLE providers (
   CONSTRAINT chk_providers_status CHECK (status IN (0, 1, 2))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE deals (
+CREATE TABLE IF NOT EXISTS deals (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   deal_name VARCHAR(150) NOT NULL,
   agent_id INT UNSIGNED DEFAULT NULL,

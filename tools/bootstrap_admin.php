@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\Env;
 use App\Repositories\UserRepository;
 
 if (PHP_SAPI !== 'cli') {
@@ -12,25 +13,6 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $projectRoot = dirname(__DIR__);
-
-$envFile = $projectRoot . '/.env';
-if (is_file($envFile)) {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
-            continue;
-        }
-
-        [$name, $value] = explode('=', $line, 2);
-        $name = trim($name);
-        $value = trim($value);
-        if ($name !== '' && getenv($name) === false) {
-            putenv($name . '=' . $value);
-            $_ENV[$name] = $value;
-        }
-    }
-}
 
 spl_autoload_register(function (string $class) use ($projectRoot): void {
     $prefix = 'App\\';
@@ -44,6 +26,8 @@ spl_autoload_register(function (string $class) use ($projectRoot): void {
         require $file;
     }
 });
+
+Env::load($projectRoot);
 
 $options = getopt('', ['email:', 'password:', 'name::']);
 $email = strtolower(trim((string)($options['email'] ?? getenv('DDM_ADMIN_EMAIL') ?: '')));
