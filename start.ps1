@@ -38,4 +38,4 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Starting Distributor and Deal Manager in Docker on http://127.0.0.1:$Port" -ForegroundColor Green
-docker run --rm --add-host "host.docker.internal:host-gateway" -p "$Port`:$Port" -v "${projectRootUnix}:/app" -w /app $image php -S "0.0.0.0:$Port" -t public
+docker run --rm -p "$Port`:$Port" -v "${projectRootUnix}:/app" -w /app $image php -S "0.0.0.0:$Port" -t public

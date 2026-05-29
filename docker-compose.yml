@@ -6,9 +6,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    environment:
-      DDM_DB_HOST: mysql
-      DDM_DB_PORT: 3306
     ports:
       - "127.0.0.1:${DDM_APP_PORT:-8080}:8080"
     depends_on:
@@ -19,11 +16,11 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DDM_MYSQL_ROOT_PASSWORD:-change-me-root}
-      MYSQL_DATABASE: ${DDM_DB_NAME:-distdb}
-      MYSQL_USER: ${DDM_DB_USER:-ddm_app}
-      MYSQL_PASSWORD: ${DDM_DB_PASS:-change-me}
+      MYSQL_DATABASE: ${DB_NAME:-distdb}
+      MYSQL_USER: ${DB_USER:-ddm}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-change-me}
     ports:
-      - "127.0.0.1:${DDM_DB_HOST_PORT:-3307}:3306"
+      - "127.0.0.1:${DB_PORT:-3306}:3306"
     volumes:
       - ddm_mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d
