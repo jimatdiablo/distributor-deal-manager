@@ -207,7 +207,7 @@ This document summarizes current CRUD behavior and key business rules.
 
 ## Deployment Migration Notes
 
-- Release `v0.2.0` runs migrations automatically before the container starts the PHP server.
+- Release `v0.2.1` runs migrations automatically before the container starts the PHP server.
 - Applied migrations are stored in `schema_migrations`.
 - Normal deployments should leave `DDM_RUN_MIGRATIONS=true`.
 - Set `DDM_RUN_MIGRATIONS=false` only for emergency/manual migration control.

@@ -156,12 +156,12 @@ Deal and provider imports run inside database transactions. If an import fails m
 
 ### Release update (2026-05-29)
 
-- Prepared `v0.2.1` with standard DB_* database environment variables:
+- Tagged and published `v0.2.1` with standard DB_* database environment variables:
   `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_NAME=distdb`, `DB_USER=ddm`, and `DB_PASSWORD`.
-- Tagged and published `v0.2.0`.
+- Tagged and published `v0.2.0` with deployment-safe startup migrations.
 - Added idempotent startup migrations under `migrations/`, tracked in `schema_migrations`.
 - Added `tools/migrate.php` and image startup wiring in `docker/app-entrypoint.sh`.
 - Made `docker/mysql/init/001_schema.sql` additive for first-start database initialization.
 - Added optional first-admin seed environment variables.
 - Verified a fresh throwaway deployment applied `001_existing_schema`, served HTTP 200, and skipped the migration on repeat.
-- Fresh restore point created after documentation refresh: `restorepoints/DistributorDealManager_2026-05-29_172711.zip`.
+- Fresh restore point created after documentation refresh: `restorepoints/DistributorDealManager_2026-05-29_174140.zip`.
