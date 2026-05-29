@@ -80,6 +80,7 @@ Use unique non-sample passwords for production or shared environments.
 Docker note:
 - Use DB_HOST=127.0.0.1 and DB_PORT=3306 for the standard local and deployment configuration.
 - If an environment intentionally runs MySQL in a separate Docker network without host networking, override DB_HOST to that network hostname for that deployment only.
+- In this repo's Docker Compose setup, the app container overrides DB_HOST to `mysql` because `127.0.0.1` inside a container points to the app container itself.
 - Legacy DDM_DB_* variables are still accepted as fallbacks, but DB_* is the supported configuration.
 
 ## Included MySQL Setup

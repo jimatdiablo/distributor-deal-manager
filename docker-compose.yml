@@ -6,6 +6,9 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
     ports:
       - "127.0.0.1:${DDM_APP_PORT:-8080}:8080"
     depends_on:

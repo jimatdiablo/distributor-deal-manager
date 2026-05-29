@@ -211,6 +211,7 @@ This document summarizes current CRUD behavior and key business rules.
 - Applied migrations are stored in `schema_migrations`.
 - Normal deployments should leave `DDM_RUN_MIGRATIONS=true`.
 - Set `DDM_RUN_MIGRATIONS=false` only for emergency/manual migration control.
+- Container-to-container deployments must use a reachable DB hostname such as `mysql`; `127.0.0.1` only works when the PHP process shares the database host network namespace.
 - Check container logs for `migrations complete` after deployment.
 
 ## Quick Validation Checklist
