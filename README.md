@@ -56,10 +56,10 @@ ghcr.io/jimatdiablo/distributor-deal-manager:latest
 Current release:
 
 ```text
-ghcr.io/jimatdiablo/distributor-deal-manager:v0.2.1
+ghcr.io/jimatdiablo/distributor-deal-manager:v0.2.2
 ```
 
-`v0.2.1` includes deployment-safe startup migrations and the standard DB_* database environment names. The release image runs `php tools/migrate.php` before the PHP server starts, then skips already-applied migration versions on later restarts.
+`v0.2.2` includes deployment-safe startup migrations, the standard DB_* database environment names, and the Docker Compose app-container DB host fix. The release image runs `php tools/migrate.php` before the PHP server starts, then skips already-applied migration versions on later restarts.
 
 The image intentionally does not include `.env`; pass runtime database settings through environment variables or an env file when the container is started.
 
@@ -157,6 +157,7 @@ Deal and provider imports run inside database transactions. If an import fails m
 
 ### Release update (2026-05-29)
 
+- Tagged and published `v0.2.2` with the Docker Compose app-container database host fix.
 - Tagged and published `v0.2.1` with standard DB_* database environment variables:
   `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_NAME=distdb`, `DB_USER=ddm`, and `DB_PASSWORD`.
 - Tagged and published `v0.2.0` with deployment-safe startup migrations.
