@@ -4,6 +4,7 @@
 storage/*.log
 storage/cache/
 storage/tmp/
+restorepoints/
 vendor/
 node_modules/
 .DS_Store

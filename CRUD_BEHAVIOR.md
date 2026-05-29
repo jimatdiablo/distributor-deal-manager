@@ -200,8 +200,18 @@ This document summarizes current CRUD behavior and key business rules.
 ## Related SQL Artifacts
 
 - Init schema: `docker/mysql/init/001_schema.sql`
+- Startup migrations: `migrations/`
+- Migration runner: `tools/migrate.php`
 - Production import schema: `sql/distdb_production_import.sql`
 - Contract term migration: `sql/migration_add_distributor_contract_term.sql`
+
+## Deployment Migration Notes
+
+- Release `v0.2.0` runs migrations automatically before the container starts the PHP server.
+- Applied migrations are stored in `schema_migrations`.
+- Normal deployments should leave `DDM_RUN_MIGRATIONS=true`.
+- Set `DDM_RUN_MIGRATIONS=false` only for emergency/manual migration control.
+- Check container logs for `migrations complete` after deployment.
 
 ## Quick Validation Checklist
 

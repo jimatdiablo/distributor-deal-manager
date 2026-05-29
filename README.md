@@ -53,6 +53,14 @@ ghcr.io/jimatdiablo/distributor-deal-manager:<tag>
 ghcr.io/jimatdiablo/distributor-deal-manager:latest
 ```
 
+Current release:
+
+```text
+ghcr.io/jimatdiablo/distributor-deal-manager:v0.2.0
+```
+
+`v0.2.0` adds deployment-safe startup migrations. The release image runs `php tools/migrate.php` before the PHP server starts, then skips already-applied migration versions on later restarts.
+
 The image intentionally does not include `.env`; pass runtime database settings through environment variables or an env file when the container is started.
 
 The GHCR package is intended to be public so deployments can pull the release image without GitHub authentication.
@@ -84,6 +92,7 @@ Database migration behavior:
 - Applied migration versions are tracked in `schema_migrations`.
 - Migrations create or update the existing tables without dropping data.
 - Optional first admin seed values can be provided through `DDM_ADMIN_EMAIL`, `DDM_ADMIN_PASSWORD`, and `DDM_ADMIN_NAME`.
+- Deployment verification should include checking app logs for `migrations complete`.
 
 Provisioned objects:
 - database: distdb
@@ -143,3 +152,15 @@ Agent spreadsheet imports are limited to:
 - 5,000 data rows per file
 
 Deal and provider imports run inside database transactions. If an import fails mid-file or exceeds the row limit, inserted rows from that file are rolled back.
+
+## Maintenance Notes
+
+### Release update (2026-05-29)
+
+- Tagged and published `v0.2.0`.
+- Added idempotent startup migrations under `migrations/`, tracked in `schema_migrations`.
+- Added `tools/migrate.php` and image startup wiring in `docker/app-entrypoint.sh`.
+- Made `docker/mysql/init/001_schema.sql` additive for first-start database initialization.
+- Added optional first-admin seed environment variables.
+- Verified a fresh throwaway deployment applied `001_existing_schema`, served HTTP 200, and skipped the migration on repeat.
+- Fresh restore point created after documentation refresh: `restorepoints/DistributorDealManager_2026-05-29_172711.zip`.
