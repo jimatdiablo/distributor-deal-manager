@@ -108,6 +108,7 @@ This document summarizes current CRUD behavior and key business rules.
 ## Authentication and Access Control
 
 - Login now authenticates against `users` table accounts (`email` + `password_hash`).
+- No default master login is created unless `DDM_ADMIN_EMAIL` and `DDM_ADMIN_PASSWORD` are provided or `tools/bootstrap_admin.php` is run manually.
 - Supported roles:
   - `internal_admin`: full read/write access to all views and actions.
   - `internal_read_only`: read-only access to internal views and reports.

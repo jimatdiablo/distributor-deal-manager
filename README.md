@@ -103,7 +103,7 @@ Docker Compose binds MySQL to 127.0.0.1:3306 on the host by default. Do not expo
 
 ## First Admin Bootstrap
 
-Fresh installs need one internal admin before `/users` can manage accounts.
+Fresh installs do not include a default master login. Create one internal admin before `/users` can manage accounts.
 
 Either set these before first startup:
 
@@ -116,7 +116,7 @@ DDM_ADMIN_NAME=Initial Admin
 or run this from the project folder after the database schema is loaded:
 
 ```powershell
-docker run --rm -v "${PWD}:/app" -w /app diablo-php-cli php tools/bootstrap_admin.php --email="admin@example.com" --password="change-this-password" --name="Initial Admin"
+docker compose run --rm app php tools/bootstrap_admin.php --email="admin@example.com" --password="change-this-password" --name="Initial Admin"
 ```
 
 The tool creates an `internal_admin` only when no active internal admin exists. If one already exists, it exits without changing users.
