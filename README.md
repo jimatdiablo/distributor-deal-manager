@@ -56,14 +56,44 @@ ghcr.io/jimatdiablo/distributor-deal-manager:latest
 Current release:
 
 ```text
-ghcr.io/jimatdiablo/distributor-deal-manager:v0.2.2
+ghcr.io/jimatdiablo/distributor-deal-manager:v0.3.0
 ```
 
-`v0.2.2` includes deployment-safe startup migrations, the standard DB_* database environment names, and the Docker Compose app-container DB host fix. The release image runs `php tools/migrate.php` before the PHP server starts, then skips already-applied migration versions on later restarts.
+`v0.3.0` adds Maat email-code authentication and shared sign-in while retaining DDM's local roles and distributor restrictions. The release image runs `php tools/migrate.php` before the PHP server starts, then skips already-applied migration versions on later restarts.
 
 The image intentionally does not include `.env`; pass runtime database settings through environment variables or an env file when the container is started.
 
 The GHCR package is intended to be public so deployments can pull the release image without GitHub authentication.
+
+## Maat authentication
+
+With `MAAT_ENABLED=1`, Maat replaces the password form with email-code sign-in.
+Existing Maat cookies provide shared sign-in on the configured domain. Every
+request verifies the identity and matches an active local DDM user by email.
+DDM retains authority over roles and distributor scope; Maat organization/team
+roles never create accounts or grant DDM privileges. Disabled accounts lose
+access on their next request. Agent viewers require an existing external
+distributor. Password login remains available when Maat is disabled (the default).
+
+Register app slug `distributor-deal-manager`, namespace `ddm` in the environment's
+Maat registry. Set `MAAT_INTERNAL_URL`, optional `MAAT_JWKS_URL`, the app's own
+`MAAT_SERVICE_TOKEN`, and comma-separated `MAAT_COOKIE_DOMAINS`. Use
+`MAAT_SECURE_COOKIES=1` behind HTTPS (the default). Local HTTP development may
+explicitly set it to `0`. The image includes curl and sodium support.
+Keep credentials out of source control. Deployed settings and registration are
+managed in ddinfra, including the canonical vault token.
+
+Logout revokes this browser's Maat broker session and clears shared Maat cookies;
+it can therefore sign the browser out of other Maat apps on the same domain.
+DDM uses its own `ddm_session` cookie for form state and CSRF.
+
+Local verification (fixtures are removed, no email sent):
+
+```powershell
+docker compose exec -T app php scripts/lint.php
+docker compose exec -T app php scripts/test_maat_auth.php
+docker compose exec -T app php scripts/test_maat_http.php
+```
 
 ## Database Configuration
 Environment variables used by the app:

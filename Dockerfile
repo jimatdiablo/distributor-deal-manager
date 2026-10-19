@@ -2,7 +2,8 @@ FROM php:8.3-cli-alpine
 
 WORKDIR /app
 
-RUN docker-php-ext-install pdo_mysql
+RUN apk add --no-cache curl-dev \
+    && docker-php-ext-install pdo_mysql curl
 
 COPY . /app
 RUN chmod +x /app/docker/app-entrypoint.sh

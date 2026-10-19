@@ -12,6 +12,17 @@ final class Auth
 
     public static function user(array $config): ?array
     {
+        if (MaatAuth::enabled()) {
+            // Recheck both identity and current local permissions on every request.
+            // A cached password session cannot bypass Maat when it is enabled.
+            static $resolved = false;
+            static $maatUser = null;
+            if (!$resolved) {
+                $maatUser = MaatAuth::currentUser($config);
+                $resolved = true;
+            }
+            return $maatUser;
+        }
         $sessionKey = (string)($config['session_key'] ?? 'ddm_user');
         $user = $_SESSION[$sessionKey] ?? null;
         return is_array($user) ? $user : null;

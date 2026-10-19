@@ -27,6 +27,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     $secureCookie = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
 
+    $secureCookie = $secureCookie || getenv('MAAT_SECURE_COOKIES') === '1';
+    session_name('ddm_session');
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
