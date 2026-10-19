@@ -56,10 +56,10 @@ ghcr.io/jimatdiablo/distributor-deal-manager:latest
 Current release:
 
 ```text
-ghcr.io/jimatdiablo/distributor-deal-manager:v0.3.0
+ghcr.io/jimatdiablo/distributor-deal-manager:v0.3.1
 ```
 
-`v0.3.0` adds Maat email-code authentication and shared sign-in while retaining DDM's local roles and distributor restrictions. The release image runs `php tools/migrate.php` before the PHP server starts, then skips already-applied migration versions on later restarts.
+`v0.3.1` aligns Maat sign-in and application sessions with Gunslinger-2 while retaining DDM's local roles and distributor restrictions. The release image runs `php tools/migrate.php` before the PHP server starts, then skips already-applied migration versions on later restarts.
 
 The image intentionally does not include `.env`; pass runtime database settings through environment variables or an env file when the container is started.
 
@@ -67,17 +67,23 @@ The GHCR package is intended to be public so deployments can pull the release im
 
 ## Maat authentication
 
-With `MAAT_ENABLED=1`, Maat replaces the password form with email-code sign-in.
-Existing Maat cookies provide shared sign-in on the configured domain. Every
-request verifies the identity and matches an active local DDM user by email.
+With `MAAT_ENABLED=1`, DDM follows the Gunslinger-2 Maat consumer pattern: show
+the email step, check local account mapping before requesting a code, then show
+the verification step with a resend action. A successful exchange establishes a
+DDM session. Without that session, existing Maat cookies hydrate it automatically
+after verifying identity and matching an active local DDM user by email.
 DDM retains authority over roles and distributor scope; Maat organization/team
-roles never create accounts or grant DDM privileges. Disabled accounts lose
-access on their next request. Agent viewers require an existing external
+roles never create accounts or grant DDM privileges. Like G2, established sessions
+retain their account mapping until logout or session expiry; account changes
+apply when a new session is established. Agent viewers require an existing external
 distributor. Password login remains available when Maat is disabled (the default).
 
 Register app slug `distributor-deal-manager`, namespace `ddm` in the environment's
 Maat registry. Set `MAAT_INTERNAL_URL`, optional `MAAT_JWKS_URL`, the app's own
-`MAAT_SERVICE_TOKEN`, and comma-separated `MAAT_COOKIE_DOMAINS`. Use
+`MAAT_SERVICE_TOKEN`, and comma-separated `MAAT_COOKIE_DOMAINS` (with
+`MAAT_COOKIE_DOMAIN` accepted as a fallback). Production uses `.prd.dd.corp`
+so the same Maat identity/broker cookies work across sibling production apps.
+The DDM application session cookie stays host-only. Use
 `MAAT_SECURE_COOKIES=1` behind HTTPS (the default). Local HTTP development may
 explicitly set it to `0`. The image includes curl and sodium support.
 Keep credentials out of source control. Deployed settings and registration are

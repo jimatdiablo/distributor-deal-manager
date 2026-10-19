@@ -24,7 +24,8 @@ final class MaatAuth
             'service_token' => getenv('MAAT_SERVICE_TOKEN') ?: '',
             'app' => 'distributor-deal-manager',
             'namespace' => 'ddm',
-            'cookie_domains' => array_filter(array_map('trim', explode(',', getenv('MAAT_COOKIE_DOMAINS') ?: ''))),
+            'cookie_domain' => getenv('MAAT_COOKIE_DOMAIN') ?: null,
+            'cookie_domains' => array_filter(array_map('trim', explode(',', getenv('MAAT_COOKIE_DOMAINS') ?: (getenv('MAAT_COOKIE_DOMAIN') ?: '')))),
             'secure_cookies' => getenv('MAAT_SECURE_COOKIES') !== '0',
             'timeout_ms' => (int)(getenv('MAAT_HTTP_TIMEOUT_MS') ?: 10000),
         ]);

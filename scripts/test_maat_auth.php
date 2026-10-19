@@ -77,6 +77,14 @@ try {
     check(!Auth::validateCsrfToken('wrong'), 'CSRF rejects invalid form submission');
     check(Auth::validateCsrfToken(Auth::csrfToken()), 'CSRF accepts session token');
     Maat::clearJwksCache();
+    putenv('MAAT_COOKIE_DOMAINS=.prd.dd.corp');
+    MaatAuth::configure();
+    $_SERVER['HTTP_HOST'] = 'ddm.prd.dd.corp';
+    check(Maat::cookieDomain() === '.prd.dd.corp', 'DDM scopes SSO cookies to the production base domain');
+    $_SERVER['HTTP_HOST'] = 'g2.prd.dd.corp';
+    check(Maat::cookieDomain() === '.prd.dd.corp', 'Sibling production apps share the same Maat cookie domain');
+    $_SERVER['HTTP_HOST'] = 'ddm.stg.dd.corp';
+    check(Maat::cookieDomain() === null, 'Production SSO cookie does not cross into staging');
 } finally {
     $pdo->rollBack();
 }

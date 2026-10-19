@@ -12,23 +12,25 @@ final class Auth
 
     public static function user(array $config): ?array
     {
-        if (MaatAuth::enabled()) {
-            // Recheck both identity and current local permissions on every request.
-            // A cached password session cannot bypass Maat when it is enabled.
-            static $resolved = false;
-            static $maatUser = null;
-            if (!$resolved) {
-                $maatUser = MaatAuth::currentUser($config);
-                $resolved = true;
-            }
-            return $maatUser;
-        }
         $sessionKey = (string)($config['session_key'] ?? 'ddm_user');
         $user = $_SESSION[$sessionKey] ?? null;
+        if (MaatAuth::enabled()) {
+            // Follow G2: retain an established application session; hydrate from
+            // shared Maat cookies only when there is no Maat-backed local session.
+            if (is_array($user) && ($user['auth_source'] ?? '') === 'maat') {
+                return $user;
+            }
+            $user = MaatAuth::currentUser($config);
+            if ($user !== null) {
+                self::login($config, $user, 'maat');
+                return $_SESSION[$sessionKey];
+            }
+            return null;
+        }
         return is_array($user) ? $user : null;
     }
 
-    public static function login(array $config, array $user): void
+    public static function login(array $config, array $user, string $source = 'local'): void
     {
         $sessionKey = (string)($config['session_key'] ?? 'ddm_user');
         session_regenerate_id(true);
@@ -39,6 +41,7 @@ final class Auth
             'role' => (string)($user['role'] ?? ''),
             'distributor_id' => (int)($user['distributor_id'] ?? 0),
             'is_internal' => self::isInternalRole((string)($user['role'] ?? '')),
+            'auth_source' => $source,
         ];
     }
 

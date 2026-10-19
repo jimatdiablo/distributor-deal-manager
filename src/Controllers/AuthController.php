@@ -19,7 +19,7 @@ final class AuthController
             exit;
         }
 
-        return View::render('auth/login', ['title' => 'Login']);
+        return View::render('auth/login', ['title' => 'Sign In']);
     }
 
     public function login(array $request, array $config): string
@@ -92,7 +92,7 @@ final class AuthController
 
     public function logout(array $request, array $config): void
     {
-        if (MaatAuth::enabled()) {
+        if (MaatAuth::enabled() && (Auth::user($config)['auth_source'] ?? '') === 'maat') {
             MaatAuth::configure();
             try {
                 \Maat::signOut();
@@ -100,7 +100,7 @@ final class AuthController
                 error_log('DDM Maat sign-out unavailable.');
             }
         }
-        unset($_SESSION['maat_sign_in_email'], $_SESSION['_csrf_token']);
+        $_SESSION = [];
         Auth::logout($config);
         header('Location: /login');
         exit;
@@ -111,16 +111,23 @@ final class AuthController
         MaatAuth::configure();
         $action = (string)($request['body']['action'] ?? 'request');
         $email = strtolower(trim((string)($request['body']['email'] ?? '')));
+        $showCodeStep = false;
         $message = 'Sign-in is temporarily unavailable. Please try again.';
         try {
             if ($action === 'request' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                // Generic responses avoid revealing whether an account exists.
-                if (\Maat::requestSignIn($email)) {
+                unset($_SESSION['maat_sign_in_email']);
+                $repo = new UserRepository(Database::pdo($config));
+                // Match G2: do not ask Maat to send mail for an unmapped account.
+                if (MaatAuth::eligibleUser($repo, $email) === null) {
+                    $message = 'If this email is mapped to a DDM account, check your email for the sign-in code.';
+                } elseif (\Maat::requestSignIn($email)) {
                     $_SESSION['maat_sign_in_email'] = $email;
-                    $message = 'If this email is eligible, a sign-in code has been sent. Enter it below.';
+                    $showCodeStep = true;
+                    $message = 'Check your email for the sign-in code.';
                 }
             } elseif ($action === 'verify') {
                 $email = (string)($_SESSION['maat_sign_in_email'] ?? '');
+                $showCodeStep = $email !== '';
                 $code = trim((string)($request['body']['code'] ?? ''));
                 $identity = $email !== '' && preg_match('/^[0-9]{6}$/D', $code)
                     ? \Maat::exchangeCode($email, $code, ['session_name' => 'Distributor Deal Manager']) : null;
@@ -130,7 +137,7 @@ final class AuthController
                     && strcasecmp($identity->email, $email) === 0
                     ? MaatAuth::eligibleUser($repo, $identity->email) : null;
                 if ($user !== null) {
-                    Auth::login($config, $user);
+                    Auth::login($config, $user, 'maat');
                     $repo->updateLastLogin((int)$user['id']);
                     unset($_SESSION['maat_sign_in_email']);
                     header('Location: /');
@@ -143,6 +150,9 @@ final class AuthController
         } catch (\Throwable $error) {
             error_log('DDM Maat sign-in request failed.');
         }
-        return View::render('auth/login', ['title' => 'Login', 'message' => $message]);
+        return View::render('auth/login', [
+            'title' => 'Sign In', 'message' => $message,
+            'showCodeStep' => $showCodeStep, 'signInEmail' => $email,
+        ]);
     }
 }
